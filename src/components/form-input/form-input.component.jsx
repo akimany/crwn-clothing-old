@@ -3,9 +3,14 @@ import './form-input.styles.scss';
 const FormInput = ({ handleChange, label, ...otherProps }) => {
   return (
     <div className="group">
-      <input className="form-input" onChange={handleChange} {...otherProps} />
+      <input
+        className="form-input"
+        autoComplete="autocomplete ph"
+        onChange={handleChange}
+        {...otherProps}
+      />
       {label ? (
-        // shirnk if the user has types anything in
+        // shrink if the user types anything in
         <label
           className={`${
             otherProps.value.length ? 'shrink' : ''
