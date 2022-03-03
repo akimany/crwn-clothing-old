@@ -29,13 +29,29 @@ class App extends Component {
     //Adds an observer for changes to the user's sign-in state.
     // so close on unmount
     this.unsubscribeFromAuth = onAuthStateChanged(auth, async (userAuth) => {
-      this.setState({ currentUser: userAuth });
+      // if user is signed in - not null
       if (userAuth) {
-        //console.log(userAuth);
-        // if user is signed in
-        //makeUserProfileDocument returns a doc or object(?) - we are using to see if our DB has updated with any new data. The const being called userRef, is like a reminder that makeUserProfileDocument returns userRef (which is a doc):
-        //const userRef = await makeUserProfileDocument(userAuth);
-        //onSnapshot(doc(db, 'users', userAuth.uid), (snapshot) => {});
+        //makeUserProfileDocument returns userRef object - we are using to see if our DB has updated with any new data. The const being called userRef, is like a reminder that makeUserProfileDocument returns userRef (which is a doc):
+        const userRef = await makeUserProfileDocument(userAuth);
+        const unsub = onSnapshot(userRef, (snapshot) => {
+          this.setState(
+            {
+              currentUser: {
+                id: snapshot.id,
+                ...snapshot.data(),
+              },
+            },
+            //setState is asynch - so we pass a 2nd function so we can console.log
+            () => {
+              console.log(this.state);
+            }
+          );
+        });
+      } else {
+        // like setting it to null
+        this.setState({
+          currentUser: userAuth,
+        });
       }
     });
   }

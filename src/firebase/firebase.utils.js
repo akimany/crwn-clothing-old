@@ -30,17 +30,14 @@ const db = getFirestore(firebaseApp);
 const getData = async () => {
   const docRef = doc(db, 'users', 'ACZLF37XpmdqCAGEJ7DQ');
   const docSnap = await getDoc(docRef);
-  console.log('docSnap ', docSnap);
-  console.log('docSnap Data', docSnap.data());
 };
 
 const makeUserProfileDocument = async (userAuth, additonalData) => {
   if (!userAuth) return;
-  const userRef = doc(db, `users/${userAuth.uid}`);
+  const userRef = doc(db, 'users', `${userAuth.uid}`);
   const snapshot = await getDoc(userRef);
-  // console.log('snapshot', snapshot);
 
-  if (!snapshot.exists) {
+  if (!snapshot.exists()) {
     const { displayName, email } = userAuth;
     const madeAt = new Date();
 
@@ -50,7 +47,6 @@ const makeUserProfileDocument = async (userAuth, additonalData) => {
       console.log('error trying to send to user data', error.message);
     }
   }
-  // returns a doc
   return userRef;
 };
 
