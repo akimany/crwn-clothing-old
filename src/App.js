@@ -11,20 +11,18 @@ import { onSnapshot, doc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db, makeUserProfileDocument } from './firebase/firebase.utils';
 
+import { connect } from 'react-redux';
+import setCurrentUser from './redux/user/user.actions';
+
 // styles
 import './App.css';
 
 class App extends Component {
-  constructor() {
-    super();
-    this.state = {
-      currentUser: null,
-    };
-  }
   // for subscription:
   unsubscribeFromAuth = null;
 
   componentDidMount() {
+    const { setCurrentUser } = this.props;
     // the parameter is what the user on the auth is
     //Adds an observer for changes to the user's sign-in state.
     // so close on unmount
@@ -34,24 +32,14 @@ class App extends Component {
         //makeUserProfileDocument returns userRef object - we are using to see if our DB has updated with any new data. The const being called userRef, is like a reminder that makeUserProfileDocument returns userRef (which is a doc):
         const userRef = await makeUserProfileDocument(userAuth);
         const unsub = onSnapshot(userRef, (snapshot) => {
-          this.setState(
-            {
-              currentUser: {
-                id: snapshot.id,
-                ...snapshot.data(),
-              },
-            },
-            //setState is asynch - so we pass a 2nd function so we can console.log
-            () => {
-              console.log(this.state);
-            }
-          );
+          setCurrentUser({
+            id: snapshot.id,
+            ...snapshot.data(),
+          });
         });
       } else {
         // like setting it to null
-        this.setState({
-          currentUser: userAuth,
-        });
+        setCurrentUser(userAuth);
       }
     });
   }
@@ -63,7 +51,7 @@ class App extends Component {
   render() {
     return (
       <div>
-        <Header currentUser={this.state.currentUser} />
+        <Header />
         <Switch>
           <Route exact path="/" component={HomePage} />
           <Route path="/shop" component={ShopPage} />
@@ -74,4 +62,8 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapDispatchToProps = (dispatch) => ({
+  setCurrentUser: (user) => dispatch(setCurrentUser(user)),
+});
+
+export default connect(null, mapDispatchToProps)(App);
