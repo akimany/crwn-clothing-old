@@ -1,7 +1,9 @@
+import UserActionTypes from './user.types';
+
 const setCurrentUser = (userObj) => {
   //user auth/...or null
   return {
-    type: 'SET_CURRENT_USER',
+    type: UserActionTypes.SET_CURRENT_USER,
     payload: userObj,
   };
 };
